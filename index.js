@@ -19,13 +19,21 @@ const question1 = () => {
 
 const question2 = () => {
   return new Promise((resolve, reject) => {
+    rl.question('Provide Blog Category-> Eg) Test Category :', (blogUrl) => {
+      resolve(blogUrl);
+    });
+  });
+};
+
+const question3 = () => {
+  return new Promise((resolve, reject) => {
     rl.question('Provide Blog Title-> Eg) Blog Title :', (blogTitle) => {
       resolve(blogTitle);
     });
   });
 };
 
-const question3 = () => {
+const question4 = () => {
   return new Promise((resolve, reject) => {
     rl.question('Provide Blog Keywords: Eg) blog,fun,movies :', (blogKeywords) => {
       resolve(blogKeywords);
@@ -33,7 +41,7 @@ const question3 = () => {
   });
 };
 
-const question4 = () => {
+const question5 = () => {
   return new Promise((resolve, reject) => {
     rl.question('Provide Blog Description: Eg) Excerpt (1-2 lines) :', (blogDescription) => {
       resolve(blogDescription);
@@ -41,7 +49,7 @@ const question4 = () => {
   });
 };
 
-const question5 = () => {
+const question6 = () => {
   return new Promise((resolve, reject) => {
     rl.question('Provide Document File Name: Eg) test-document.docx :', (fileName) => {
       resolve(fileName);
@@ -51,10 +59,11 @@ const question5 = () => {
 
 const main = async () => {
   const blogUrl = await question1();
-  const blogTitle = await question2();
-  const blogKeywords = await question3();
-  const blogDescription = await question4();
-  const fileName = await question5();
+  const blogCategory = await question2();
+  const blogTitle = await question3();
+  const blogKeywords = await question4();
+  const blogDescription = await question5();
+  const fileName = await question6();
   const filePath = `blog-documents/${fileName}`;
 
   try {
@@ -63,13 +72,14 @@ const main = async () => {
     const messages = result.messages; // Any messages, such as warnings during conversion
     const responseObject = {
       html: html,
+      category: blogCategory,
       title: blogTitle,
       keywords: blogKeywords,
       description: blogDescription,
-      fileName: fileName,
-      url: blogUrl
+      urlSlug: blogUrl
     };
     console.log("Messages:", messages);
+    console.log("Done, You've successfully generated Blog 🎉 !");
     rl.close();
     return responseObject;
   } catch (error) {
@@ -82,7 +92,7 @@ const main = async () => {
 app.get('/', async (req, res) => {
   try {
     const response = await main();
-    return res.json(response);
+    return res.type('json').send(JSON.stringify(response, null, 2) + '\n');
   } catch (error) {
     console.error("Error processing request:", error);
     return res.status(500).json({ error: "Server error" });
